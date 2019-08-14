@@ -18,28 +18,30 @@ defmodule Tindev.Endpoint do
     result = Mongo.find_one(database, "developers", %{username: username})
 
     if result == nil do
-      githubUser = GithubUserAPI.get!(username).body
+      github_user = GithubUserAPI.get!(username).body
 
-      lastInsertedID =
-        Mongo.insert_one!(database, "developers", %{
+      last_inserted_id =
+        database
+        |> Mongo.insert_one!("developers", %{
           name:
-            if(String.length(githubUser[:name]) == 0,
-              do: githubUser[:username],
-              else: githubUser[:name]
+            if(String.length(github_user[:name]) == 0,
+              do: github_user[:username],
+              else: github_user[:name]
             ),
-          username: String.downcase(githubUser[:login]),
-          bio: githubUser[:bio],
-          avatar: githubUser[:avatar_url]
+          username: String.downcase(github_user[:login]),
+          bio: github_user[:bio],
+          avatar: github_user[:avatar_url]
         })
         |> Map.delete("inserted_id")
 
-      insertedUser =
-        Mongo.find_one(database, "developers", %{_id: lastInsertedID.inserted_id})
+      inserted_user =
+        database
+        |> Mongo.find_one("developers", %{_id: last_inserted_id.inserted_id})
         |> Map.delete("_id")
 
       conn
       |> put_resp_content_type(@content_type)
-      |> send_resp(200, Poison.encode!(insertedUser))
+      |> send_resp(200, Poison.encode!(inserted_user))
     else
       conn |> send_resp(200, result |> Map.delete("_id") |> Poison.encode!())
     end

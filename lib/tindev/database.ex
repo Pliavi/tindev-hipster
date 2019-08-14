@@ -1,5 +1,5 @@
 defmodule Tindev.Database do
-  def get() do
+  def get do
     dbcluster = Application.get_env(:tindev, :dbcluster)
     dbbase = Application.get_env(:tindev, :dbbase)
     dbuser = Application.get_env(:tindev, :dbuser)
