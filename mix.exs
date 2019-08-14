@@ -28,7 +28,8 @@ defmodule Tindev.MixProject do
       {:mongodb_driver, "~> 0.5"},
       {:db_connection, "~> 2.0"},
       {:httpoison, "~> 1.4"},
-      {:exsync, "~> 0.2", only: :dev}
+      {:exsync, "~> 0.2", only: :dev},
+      {:credo, "~> 1.1", only: [:dev, :test], runtime: false}
     ]
   end
 end
